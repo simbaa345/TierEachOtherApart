@@ -67,38 +67,56 @@ function hostGame() {
         }
         addBots(numBots);
     };
-
-    document.getElementById('startGame').onclick = () => {
-        if (players.length < 4) {
-            alert('You need at least 4 players to start the game.');
-            return;
-        }
-        startGame(players); // Call the function to start the game
-    };
 }
 
-function addBots(numBots) {
-    const app = document.getElementById('app');
-    const teamSelection = document.getElementById('teamSelection');
-    teamSelection.innerHTML = `<h3>Players:</h3>`;
-    players = [document.getElementById('playerName').value]; // Include host
+function loadAvatars() {
+    const avatarsDiv = document.getElementById('avatars');
+    avatarsDiv.innerHTML = ''; // Clear previous avatars
 
+    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add your avatar file names here
+    avatars.forEach((avatar, index) => {
+        const img = document.createElement('img');
+        img.src = `images/${avatar}`;
+        img.className = 'avatar';
+        img.alt = `Avatar ${index + 1}`;
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.borderRadius = '50%';
+        img.onclick = () => selectAvatar(index);
+
+        avatarsDiv.appendChild(img);
+    });
+}
+
+function selectAvatar(index) {
+    // Store selected avatar and player name
+    const name = document.getElementById('playerName').value;
+    if (!name) return alert('Please enter your name before selecting an avatar.');
+
+    players.push({ name, avatar: index });
+    document.getElementById('avatars').innerHTML = ''; // Clear avatars after selection
+
+    // Display selected avatar
+    const selectedAvatar = document.createElement('div');
+    selectedAvatar.innerHTML = `<img src="images/avatar${index + 1}.png" style="border-radius: 50%; width: 50px; height: 50px;"> ${name}`;
+    document.getElementById('teamSelection').appendChild(selectedAvatar);
+
+    // Enable the start game button if conditions are met
+    const startGameButton = document.getElementById('startGame');
+    startGameButton.disabled = players.length < 4; // Update as needed for team balance
+}
+
+// Add bots and display them in the team selection
+function addBots(numBots) {
+    const teamSelection = document.getElementById('teamSelection');
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
-        players.push(botName);
+        players.push({ name: botName, avatar: (i % 3) }); // Assigning avatars in a cycle
         const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/bot_avatar${i}.png" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
+        botDiv.innerHTML = `<img src="images/avatar${(i % 3) + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
-
-    // Display all players including bots
-    players.forEach(player => {
-        const playerDiv = document.createElement('div');
-        playerDiv.innerText = player;
-        teamSelection.appendChild(playerDiv);
-    });
-
-    // Enable Start Game button if there are enough players
+    // Update start game button if there are at least 4 players including bots
     const startGameButton = document.getElementById('startGame');
     startGameButton.disabled = players.length < 4; // Enable if 4 or more players
 }
