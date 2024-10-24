@@ -2,6 +2,7 @@ import { GameSetup } from './GameSetup.js';
 import { GameLobby } from './GameLobby.js';
 import { categories } from './categories.js'; // Import your categories
 
+console.log("script.js is loaded");
 const socket = io(); // Initialize Socket.IO
 const existingLobbyCodes = new Set(); // To keep track of lobby codes
 
