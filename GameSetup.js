@@ -65,7 +65,7 @@ export function GameSetup(hostGame, joinGame) {
 
             // Avatar selection logic
             img.addEventListener('click', () => {
-                selectAvatar(avatar, playerName);
+                selectAvatar(avatar, playerName); // Call to select the avatar
             });
 
             avatarSelection.appendChild(img);
@@ -93,6 +93,13 @@ export function GameSetup(hostGame, joinGame) {
         avatarImage.style.display = 'block'; // Centering the avatar
         avatarImage.style.margin = '0 auto'; // Center the avatar
         app.appendChild(avatarImage);
+
+        // Disable further avatar selection
+        const avatarSelection = document.getElementById('avatarSelection');
+        avatarSelection.querySelectorAll('img').forEach(img => {
+            img.style.pointerEvents = 'none'; // Disable clicks on all avatars
+            img.style.opacity = '0.5'; // Dim the avatars
+        });
 
         // Team selection (for simplicity, assume two teams)
         const teamSelection = document.createElement('div');
