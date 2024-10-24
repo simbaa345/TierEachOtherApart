@@ -62,7 +62,74 @@ export function GameSetup(hostGame, joinGame) {
                 const botName = `Bot ${i}`;
                 players.push({ name: botName, avatar: `avatar${(i % 3) + 1}`, team: null }); // Assign avatars in a round-robin fashion
             }
-            showAvatarSelection(playerName); // Proceed to avatar selection for the host
+            assignTeams(); // Assign teams after adding bots
+            showLobby(); // Show lobby with teams and avatars
+        });
+    }
+
+    // Function to show the lobby with teams
+    function showLobby() {
+        const app = document.getElementById('app');
+        app.innerHTML = ''; // Clear the current content
+
+        const teamsContainer = document.createElement('div');
+        teamsContainer.style.textAlign = 'center';
+
+        const teams = {};
+        players.forEach(player => {
+            if (!teams[player.team]) {
+                teams[player.team] = [];
+            }
+            teams[player.team].push(player);
+        });
+
+        // Display teams and their members
+        Object.keys(teams).forEach(teamName => {
+            const teamDiv = document.createElement('div');
+            teamDiv.innerHTML = `<h3>${teamName}</h3>`;
+            const avatarsContainer = document.createElement('div');
+            avatarsContainer.style.display = 'flex';
+            avatarsContainer.style.justifyContent = 'center';
+            avatarsContainer.style.gap = '10px';
+
+            teams[teamName].forEach(member => {
+                const avatarImage = document.createElement('img');
+                avatarImage.src = `images/${member.avatar}.png`;
+                avatarImage.alt = `${member.name}'s Avatar`;
+                avatarImage.style.width = '50px';
+                avatarImage.style.borderRadius = '50%';
+                avatarsContainer.appendChild(avatarImage);
+            });
+
+            teamDiv.appendChild(avatarsContainer);
+            teamsContainer.appendChild(teamDiv);
+        });
+
+        app.appendChild(teamsContainer);
+
+        // Only the host sees the "Start Game" button
+        const startButton = document.createElement('button');
+        startButton.innerText = 'Start Game';
+        startButton.style.padding = '10px 20px';
+        startButton.style.marginTop = '20px';
+        startButton.disabled = players.length < 4; // Disable button if less than 4 players
+        startButton.addEventListener('click', () => {
+            alert('Game is starting!');
+            // Add logic to transition to the game part here
+        });
+
+        if (players[0].isHost) { // Only show for the host
+            app.appendChild(startButton);
+        }
+    }
+
+    // Function to assign players to teams based on current player count
+    function assignTeams() {
+        const playerCount = players.length;
+        const teamsCount = Math.min(Math.ceil(playerCount / 2), maxTeams); // Max teams based on player count
+
+        players.forEach((player, index) => {
+            player.team = `Team ${Math.floor(index / (playerCount / teamsCount)) + 1}`;
         });
     }
 
@@ -136,36 +203,6 @@ export function GameSetup(hostGame, joinGame) {
         });
 
         app.appendChild(avatarsContainer);
-
-        // Check if player is the first in lobby to start the game
-        if (players.filter(p => p.team === teamName).length === 1) {
-            const startButton = document.createElement('button');
-            startButton.innerText = 'Start Game';
-            startButton.style.padding = '10px 20px';
-            startButton.style.marginTop = '20px';
-            startButton.disabled = players.length < 4; // Disable button if less than 4 players
-            startButton.addEventListener('click', () => {
-                // Logic to start the game
-                alert('Game is starting!');
-            });
-
-            app.appendChild(startButton);
-        }
-    }
-
-    // Function to generate a unique lobby code
-    function generateLobbyCode() {
-        return Math.random().toString(36).substring(2, 8).toUpperCase(); // Generates a random 6-character code
-    }
-
-    // Function to assign players to teams based on current player count
-    function assignTeams() {
-        const playerCount = players.length;
-        const teamsCount = Math.min(Math.ceil(playerCount / 2), maxTeams); // Max teams based on player count
-
-        players.forEach((player, index) => {
-            player.team = `Team ${Math.floor(index / (playerCount / teamsCount)) + 1}`;
-        });
     }
 
     document.body.appendChild(container); // Append the main container to the body
