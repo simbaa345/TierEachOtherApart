@@ -1,6 +1,12 @@
-import { setupGame } from './GameSetup.js';
+let players = [];
+let lobbyCode;
+let selectedAvatar = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Document loaded, setting up game...');
-    setupGame();
-});
+// Function to select avatars
+function selectAvatar(avatar) {
+    if (selectedAvatar) {
+        selectedAvatar.classList.remove('selected');
+    }
+    selectedAvatar = avatar;
+    avatar.classList.add('selected');
+}
