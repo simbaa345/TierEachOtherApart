@@ -59,7 +59,7 @@ function displayGame() {
     // Black table structure
     gameContainer.innerHTML = `
         <h2>Time Remaining: <span id="timer">120</span> seconds</h2>
-        <div style="display: flex; justify-content: space-between; width: 300px;">
+        <div style="display: flex;">
             <div style="width: 50px; text-align: center; color: white;">S</div>
             <div style="width: 50px; text-align: center; color: white;">A</div>
             <div style="width: 50px; text-align: center; color: white;">B</div>
@@ -67,7 +67,7 @@ function displayGame() {
             <div style="width: 50px; text-align: center; color: white;">D</div>
             <div style="width: 50px; text-align: center; color: white;">F</div>
         </div>
-        <div style="display: flex; justify-content: space-between; border: 2px solid black; background-color: black; color: white;">
+        <div style="display: flex; border: 2px solid black; background-color: black; color: white;">
             <div style="width: 50px; padding: 10px;"></div>
             <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
@@ -92,7 +92,7 @@ function populateOptions() {
         optionDiv.textContent = option;
         optionDiv.draggable = true;
         optionDiv.ondragstart = (event) => {
-            event.dataTransfer.setData('text', option);
+            event.dataTransfer.setData('text/plain', option);
         };
         optionsContainer.appendChild(optionDiv);
     });
@@ -104,8 +104,13 @@ function allowDrop(event) {
 
 function drop(event) {
     event.preventDefault();
-    const data = event.dataTransfer.getData('text');
+    const data = event.dataTransfer.getData('text/plain');
     const tierCell = event.target;
+
+    // Clear existing child elements to avoid multiple drops
+    while (tierCell.firstChild) {
+        tierCell.removeChild(tierCell.firstChild);
+    }
 
     // Append dragged item to the tier cell
     const itemDiv = document.createElement('div');
