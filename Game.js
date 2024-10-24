@@ -33,6 +33,80 @@ document.getElementById('startGame').onclick = () => {
 };
 
 function startGame() {
-    // Implement countdown and game starting logic here
-    alert("Game is starting! Implement countdown logic here.");
+    const countdownContainer = document.createElement('div');
+    countdownContainer.id = 'countdown';
+    document.getElementById('app').appendChild(countdownContainer);
+
+    let countdown = 5;
+    const countdownInterval = setInterval(() => {
+        countdownContainer.innerHTML = `Game starts in ${countdown}...`;
+        countdown--;
+
+        if (countdown < 0) {
+            clearInterval(countdownInterval);
+            countdownContainer.innerHTML = "Game Started!";
+            setTimeout(() => {
+                // Transition to game logic here
+                countdownContainer.innerHTML = ""; // Clear countdown message
+                displayGame(); // Call the function to display the game
+            }, 1000);
+        }
+    }, 1000);
+}
+
+function displayGame() {
+    // Implement the game UI here with tier lists
+    const gameContainer = document.createElement('div');
+    gameContainer.id = 'gameContainer';
+    document.getElementById('app').appendChild(gameContainer);
+
+    // Example structure of the game UI
+    gameContainer.innerHTML = `
+        <h2>Time Remaining: <span id="timer">120</span> seconds</h2>
+        <div id="tierList" style="display: flex;">
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>S</h3>
+                <div class="tier-cell" data-tier="S"></div>
+            </div>
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>A</h3>
+                <div class="tier-cell" data-tier="A"></div>
+            </div>
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>B</h3>
+                <div class="tier-cell" data-tier="B"></div>
+            </div>
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>C</h3>
+                <div class="tier-cell" data-tier="C"></div>
+            </div>
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>D</h3>
+                <div class="tier-cell" data-tier="D"></div>
+            </div>
+            <div style="border: 1px solid black; padding: 10px;">
+                <h3>F</h3>
+                <div class="tier-cell" data-tier="F"></div>
+            </div>
+        </div>
+        <button id="submitRankings">Submit Rankings</button>
+    `;
+
+    startTimer(120); // Start the 2-minute timer
+}
+
+function startTimer(duration) {
+    let timer = duration;
+    const timerDisplay = document.getElementById('timer');
+
+    const timerInterval = setInterval(() => {
+        timer--;
+        timerDisplay.textContent = timer;
+
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting rankings...");
+            // Implement the logic for submitting rankings here
+        }
+    }, 1000);
 }
