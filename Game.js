@@ -1,94 +1,105 @@
 let players = [];
 let currentPlayerIndex = 0;
-let timer;
+let countdownTimer;
+const TIME_LIMIT = 120; // 2 minutes for tier ranking
 
-function startGame(playerList) {
-    players = playerList;
-    currentPlayerIndex = 0;
-    showGameScreen();
-    startCountdown();
-}
-
-function showGameScreen() {
+function startGame() {
     const app = document.getElementById('app');
-    app.innerHTML = `
-        <h2 style="text-align: center;">Game Started!</h2>
-        <div id="countdown" style="text-align: center; font-size: 2em;">2:00</div>
-        <div id="tierList" style="display: flex; justify-content: center; margin-top: 20px;">
-            ${createTierList()}
-        </div>
-        <div id="categoryItems" style="margin-top: 20px;"></div>
-        <button id="submitRanking" style="display: none;">Submit Ranking</button>
-    `;
-    loadCategoryItems();
+    app.innerHTML = `<h2 style="color: orange;">Game Starting in <span id="countdown">5</span> seconds!</h2>`;
 
-    document.getElementById('submitRanking').onclick = submitRanking;
-}
-
-function startCountdown() {
-    let timeLeft = 120; // 2 minutes
-    const countdownDisplay = document.getElementById('countdown');
-
-    timer = setInterval(() => {
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            document.getElementById('submitRanking').style.display = 'block';
-            return;
+    let countdown = 5;
+    countdownTimer = setInterval(() => {
+        countdown--;
+        document.getElementById('countdown').innerText = countdown;
+        if (countdown === 0) {
+            clearInterval(countdownTimer);
+            displayTierList();
         }
-        countdownDisplay.innerText = `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`;
-        timeLeft--;
     }, 1000);
 }
 
-function createTierList() {
-    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
-    return TIER_OPTIONS.map(tier => `
-        <div class="tier" data-tier="${tier}" style="border: 1px solid black; padding: 10px; margin: 5px; width: 80px; text-align: center;">
-            <strong>${tier}</strong>
-            <div class="tier-items" id="${tier}-items" style="min-height: 100px;"></div>
+function displayTierList() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <h2 style="color: orange;">Drag and Drop Your Rankings</h2>
+        <div id="tierList" style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <div id="tiers" style="margin-right: 20px;">
+                <div class="tier-cell" data-tier="S">S</div>
+                <div class="tier-cell" data-tier="A">A</div>
+                <div class="tier-cell" data-tier="B">B</div>
+                <div class="tier-cell" data-tier="C">C</div>
+                <div class="tier-cell" data-tier="D">D</div>
+                <div class="tier-cell" data-tier="F">F</div>
+            </div>
+            <div id="rankingOptions" style="width: 200px; border: 1px solid black; height: 400px; overflow-y: auto;">
+                <h3>Options</h3>
+                <ul id="optionList"></ul>
+            </div>
         </div>
-    `).join('');
+        <button id="submitRanking" style="display: none;">Submit Ranking</button>
+        <div id="timer" style="color: red;">Time Left: <span id="timeLeft">${TIME_LIMIT}</span> seconds</div>
+    `;
+    
+    // Load options from categories
+    loadOptions();
+    
+    // Set up drag-and-drop
+    setupDragAndDrop();
+    
+    // Start the timer
+    startTimer();
 }
 
-function loadCategoryItems() {
-    const categoryItemsDiv = document.getElementById('categoryItems');
-    categoryItemsDiv.innerHTML = '';
+function loadOptions() {
+    const optionList = document.getElementById('optionList');
+    const categories = ['Cereal Brands', 'Honeymoon Destinations']; // Example categories
+    const options = categories.map(category => {
+        // Generate random items for demonstration
+        return Array.from({ length: 10 }, (_, i) => `${category} ${i + 1}`);
+    }).flat();
 
-    const tierListData = getTierListCategories();
-    tierListData.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.innerText = item;
-        itemDiv.draggable = true;
-        itemDiv.ondragstart = (event) => {
-            event.dataTransfer.setData('text/plain', item);
+    options.forEach(option => {
+        const li = document.createElement('li');
+        li.innerText = option;
+        li.draggable = true;
+        li.ondragstart = (e) => {
+            e.dataTransfer.setData('text/plain', option);
         };
-        categoryItemsDiv.appendChild(itemDiv);
+        optionList.appendChild(li);
     });
+}
 
-    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
-    TIER_OPTIONS.forEach(tier => {
-        const tierDiv = document.getElementById(`${tier}-items`);
-        tierDiv.ondragover = (event) => {
-            event.preventDefault(); // Allow dropping
+function setupDragAndDrop() {
+    const tierCells = document.querySelectorAll('.tier-cell');
+    tierCells.forEach(cell => {
+        cell.ondragover = (e) => {
+            e.preventDefault(); // Prevent default to allow drop
         };
-        tierDiv.ondrop = (event) => {
-            const item = event.dataTransfer.getData('text/plain');
-            if (item) {
-                const newItem = document.createElement('div');
-                newItem.innerText = item;
-                tierDiv.appendChild(newItem);
-            }
+
+        cell.ondrop = (e) => {
+            const droppedItem = e.dataTransfer.getData('text/plain');
+            const item = document.createElement('div');
+            item.innerText = droppedItem;
+            cell.appendChild(item);
+            e.preventDefault();
         };
     });
 }
 
-function submitRanking() {
-    const rankings = {};
-    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
-    TIER_OPTIONS.forEach(tier => {
-        const items = Array.from(document.getElementById(`${tier}-items`).children).map(item => item.innerText);
-        rankings[tier] = items;
-    });
+function startTimer() {
+    let timeLeft = TIME_LIMIT;
+    const timerElement = document.getElementById('timeLeft');
 
-    console.log('Player Rankings:', rankings);
-   
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        timerElement.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('submitRanking').style.display = 'block';
+            alert('Time is up! Please submit your ranking.');
+        }
+    }, 1000);
+}
+
+// Start the game when the player clicks "Start Game"
+document.getElementById('startGame').onclick = startGame;
