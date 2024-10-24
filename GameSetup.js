@@ -59,6 +59,7 @@ function hostGame() {
     `;
     loadAvatars();
 
+    // Handle bot addition
     document.getElementById('addBots').onclick = () => {
         const numBots = parseInt(document.getElementById('numBots').value);
         if (numBots < 0 || numBots > MAX_BOTS) {
@@ -92,29 +93,33 @@ function selectAvatar(index) {
     const name = document.getElementById('playerName').value;
     if (!name) return alert('Please enter your name before selecting an avatar.');
 
+    // Check if player already exists
     const existingPlayer = players.find(player => player.name === name);
     if (existingPlayer) {
         alert('You have already selected an avatar.');
         return;
     }
 
+    // Add player with selected avatar
     players.push({ name, avatar: index });
     document.getElementById('avatars').innerHTML = ''; // Clear avatars after selection
 
+    // Display selected avatar
     const selectedAvatar = document.createElement('div');
     selectedAvatar.innerHTML = `<img src="images/avatar${index + 1}.png" style="border-radius: 50%; width: 50px; height: 50px;"> ${name}`;
     document.getElementById('teamSelection').appendChild(selectedAvatar);
 
     // Enable the start game button if conditions are met
     const startGameButton = document.getElementById('startGame');
-    startGameButton.disabled = players.length < 4; // Update as needed for team balance
+    startGameButton.disabled = players.length < 4; // Check if 4 or more players
 }
 
+// Add bots and display them in the team selection
 function addBots(numBots) {
     const teamSelection = document.getElementById('teamSelection');
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
-        players.push({ name: botName, avatar: (i % 4) }); // Assigning avatars in a cycle
+        players.push({ name: botName, avatar: (i % 4) }); // Assign avatars in a cycle
         const botDiv = document.createElement('div');
         botDiv.innerHTML = `<img src="images/avatar${(i % 4) + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
@@ -123,6 +128,7 @@ function addBots(numBots) {
     startGameButton.disabled = players.length < 4; // Enable if 4 or more players
 }
 
+// Generate a random lobby code
 function generateLobbyCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
 }
