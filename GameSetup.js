@@ -27,9 +27,7 @@ export function GameSetup(hostGame, joinGame) {
     hostButton.addEventListener('click', () => {
         const playerName = playerNameInput.value.trim();
         if (playerName) {
-            const lobbyCode = generateLobbyCode(); // Generate a unique lobby code
-            players.push({ name: playerName, avatar: null, team: null, isHost: true });
-            showGameSetup(playerName, lobbyCode); // Proceed to setup
+            showBotSelection(playerName); // Proceed to bot selection
         } else {
             alert('Please enter your name to host a game.');
         }
@@ -46,38 +44,26 @@ export function GameSetup(hostGame, joinGame) {
         }
     });
 
-    // Function to show the game setup after hosting
-    function showGameSetup(playerName, lobbyCode) {
-        container.innerHTML = `<h3 style="text-align: center;">Lobby Code: <strong>${lobbyCode}</strong></h3>`;
-        
-        const avatarSelection = document.createElement('div');
-        avatarSelection.id = 'avatarSelection';
-        avatarSelection.style.display = 'flex';
-        avatarSelection.style.justifyContent = 'center';
-        avatarSelection.style.gap = '10px'; // Space between avatars
+    // Function to show bot selection after hosting a game
+    function showBotSelection(playerName) {
+        container.innerHTML = `
+            <h3 style="text-align: center;">How many bots would you like to add? (0-3)</h3>
+            <input type="number" id="botCount" min="0" max="3" value="0" style="width: 50px; text-align: center;" />
+            <button id="startGameButton" style="padding: 10px 20px; font-size: 1em;">Start Game</button>
+        `;
 
-        // List of avatars (you can add more)
-        const avatars = ['avatar1', 'avatar2', 'avatar3'];
-        avatars.forEach(avatar => {
-            const img = document.createElement('img');
-            img.src = `images/${avatar}.png`; // Adjust image path as needed
-            img.alt = avatar;
-            img.className = 'avatar';
-            img.setAttribute('data-avatar', avatar);
-            img.style.width = '50px'; // Set a smaller size for the avatar
-            img.style.height = '50px';
-            img.style.borderRadius = '50%'; // Make the avatar circular
-            img.style.cursor = 'pointer'; // Change cursor to pointer for interactivity
+        const botCountInput = container.querySelector('#botCount');
+        const startGameButton = container.querySelector('#startGameButton');
 
-            // Avatar selection logic
-            img.addEventListener('click', () => {
-                selectAvatar(avatar, playerName); // Call to select the avatar
-            });
-
-            avatarSelection.appendChild(img);
+        startGameButton.addEventListener('click', () => {
+            const botCount = parseInt(botCountInput.value);
+            players.push({ name: playerName, avatar: null, team: null, isHost: true });
+            for (let i = 1; i <= botCount; i++) {
+                const botName = `Bot ${i}`;
+                players.push({ name: botName, avatar: `avatar${(i % 3) + 1}`, team: null }); // Assign avatars in a round-robin fashion
+            }
+            showAvatarSelection(playerName); // Proceed to avatar selection for the host
         });
-
-        container.appendChild(avatarSelection);
     }
 
     // Function to show avatar selection after joining a game
