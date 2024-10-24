@@ -1,12 +1,14 @@
-// categories.js
+// Categories.js
+
 export const categories = [
-    {
-        title: "Cereal Brands",
-        items: ["Froot Loops", "Cinnamon Toast Crunch", "Honey Nut Cheerios", "Raisin Bran", "Wheaties"],
-    },
-    {
-        title: "Honeymoon Destinations",
-        items: ["Greece", "Morocco", "Canada", "Australia", "Argentina"],
-    },
-    // Add more categories as needed
+    "Cereal Brands",
+    "Honeymoon Destinations",
+    "Movie Genres",
+    "Video Game Consoles",
+    "Ice Cream Flavors",
+    "Fictional Characters",
+    "Travel Destinations",
+    "Sports Teams",
+    "Music Genres",
+    "Board Games"
 ];
