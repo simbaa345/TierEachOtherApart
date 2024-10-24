@@ -68,7 +68,12 @@ function hostGame() {
 
     // Event listener for Start Game button
     document.getElementById('startGame').onclick = () => {
-        startGame(getPlayers()); // Get players including bots and start the game
+        const players = getPlayers();
+        if (players.length < 4) {
+            alert('You need at least 4 players to start the game.');
+            return;
+        }
+        startGame(players); // Pass players to start the game
     };
 }
 
@@ -82,9 +87,8 @@ function addBots(numBots) {
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
         players.push(botName);
-        const botAvatar = `bot_avatar${i}.png`; // Adjust the bot avatar names
         const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/${botAvatar}" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
+        botDiv.innerHTML = `<img src="images/bot_avatar${i}.png" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
 
@@ -122,7 +126,6 @@ function loadAvatars() {
         img.style.width = '50px';
         img.style.height = '50px';
         img.onclick = () => {
-            // Handle avatar selection logic
             img.style.border = '2px solid orange'; // Highlight selected avatar
             // Disable other avatars
             avatarsDiv.querySelectorAll('img').forEach(otherImg => {
@@ -138,3 +141,6 @@ function loadAvatars() {
 function generateLobbyCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
 }
+
+// Call setupGame on page load
+document.addEventListener('DOMContentLoaded', setupGame);
