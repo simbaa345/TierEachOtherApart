@@ -1,5 +1,8 @@
 // GameSetup.js
 
+const players = []; // Array to hold player data
+const maxTeams = 5; // Maximum number of teams
+
 export function GameSetup(hostGame, joinGame) {
     const container = document.createElement('div');
 
@@ -34,6 +37,7 @@ export function GameSetup(hostGame, joinGame) {
     joinButton.addEventListener('click', () => {
         const playerName = playerNameInput.value.trim();
         if (playerName) {
+            players.push({ name: playerName, avatar: null, team: null });
             showAvatarSelection(playerName); // Proceed to avatar selection
         } else {
             alert('Please enter your name to join a game.');
@@ -76,56 +80,65 @@ export function GameSetup(hostGame, joinGame) {
 
     // Function to handle avatar selection and team assignment
     function selectAvatar(selectedAvatar, playerName) {
+        const playerIndex = players.findIndex(p => p.name === playerName);
+        players[playerIndex].avatar = selectedAvatar; // Assign avatar to the player
+
         const app = document.getElementById('app');
         app.innerHTML = ''; // Clear the current content
 
-        // Display the chosen avatar and team selection
-        const welcomeMessage = document.createElement('h2');
-        welcomeMessage.innerText = `Welcome, ${playerName}! You have selected ${selectedAvatar}.`;
-        welcomeMessage.style.textAlign = 'center';
-        app.appendChild(welcomeMessage);
+        // Update team assignment
+        assignTeams();
+        
+        // Display the team name and avatars
+        const teamName = players[playerIndex].team;
+        const teamMembers = players.filter(p => p.team === teamName);
 
-        const avatarImage = document.createElement('img');
-        avatarImage.src = `images/${selectedAvatar}.png`; // Display selected avatar
-        avatarImage.alt = `${playerName}'s Avatar`;
-        avatarImage.style.width = '100px'; // Slightly larger for display
-        avatarImage.style.borderRadius = '50%'; // Keep it circular
-        avatarImage.style.display = 'block'; // Centering the avatar
-        avatarImage.style.margin = '0 auto'; // Center the avatar
-        app.appendChild(avatarImage);
+        const teamMessage = document.createElement('h2');
+        teamMessage.innerText = `You have joined ${teamName}!`;
+        teamMessage.style.textAlign = 'center';
+        app.appendChild(teamMessage);
 
-        // Disable further avatar selection
-        const avatarSelection = document.getElementById('avatarSelection');
-        avatarSelection.querySelectorAll('img').forEach(img => {
-            img.style.pointerEvents = 'none'; // Disable clicks on all avatars
-            img.style.opacity = '0.5'; // Dim the avatars
+        // Display team member avatars
+        const avatarsContainer = document.createElement('div');
+        avatarsContainer.style.display = 'flex';
+        avatarsContainer.style.justifyContent = 'center';
+        avatarsContainer.style.gap = '10px';
+
+        teamMembers.forEach(member => {
+            const avatarImage = document.createElement('img');
+            avatarImage.src = `images/${member.avatar}.png`; // Display selected avatar
+            avatarImage.alt = `${member.name}'s Avatar`;
+            avatarImage.style.width = '50px';
+            avatarImage.style.borderRadius = '50%'; // Keep it circular
+            avatarsContainer.appendChild(avatarImage);
         });
 
-        // Team selection (for simplicity, assume two teams)
-        const teamSelection = document.createElement('div');
-        teamSelection.innerHTML = `
-            <h3 style="text-align: center;">Select your team:</h3>
-            <div style="text-align: center;">
-                <button id="teamOneButton" style="padding: 10px 20px; margin: 5px;">Team One</button>
-                <button id="teamTwoButton" style="padding: 10px 20px; margin: 5px;">Team Two</button>
-            </div>
-        `;
+        app.appendChild(avatarsContainer);
 
-        const teamOneButton = teamSelection.querySelector('#teamOneButton');
-        const teamTwoButton = teamSelection.querySelector('#teamTwoButton');
+        // Check if player is the first in lobby to start the game
+        if (players.filter(p => p.team === teamName).length === 1) {
+            const startButton = document.createElement('button');
+            startButton.innerText = 'Start Game';
+            startButton.style.padding = '10px 20px';
+            startButton.style.marginTop = '20px';
+            startButton.disabled = players.length < 4; // Disable button if less than 4 players
+            startButton.addEventListener('click', () => {
+                // Logic to start the game
+                alert('Game is starting!');
+            });
 
-        // Event listeners for team selection
-        teamOneButton.addEventListener('click', () => {
-            app.innerHTML = `${playerName} has joined Team One!`;
-            // Proceed with game setup
+            app.appendChild(startButton);
+        }
+    }
+
+    // Function to assign players to teams based on current player count
+    function assignTeams() {
+        const playerCount = players.length;
+        const teamsCount = Math.min(Math.ceil(playerCount / 2), maxTeams); // Max teams based on player count
+
+        players.forEach((player, index) => {
+            player.team = `Team ${Math.floor(index / (playerCount / teamsCount)) + 1}`;
         });
-
-        teamTwoButton.addEventListener('click', () => {
-            app.innerHTML = `${playerName} has joined Team Two!`;
-            // Proceed with game setup
-        });
-
-        app.appendChild(teamSelection); // Add team selection to the app
     }
 
     document.body.appendChild(container); // Append the main container to the body
