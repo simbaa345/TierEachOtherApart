@@ -44,7 +44,7 @@ export function startGame(players) {
     categoryContainer.style.display = 'flex';
     categoryContainer.style.flexWrap = 'wrap';
     categoryContainer.style.justifyContent = 'center';
-    
+
     categories.forEach(item => {
         const categoryItem = document.createElement('div');
         categoryItem.innerText = item;
