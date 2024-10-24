@@ -1,6 +1,6 @@
 import { GameSetup } from './GameSetup.js';
 import { GameLobby } from './GameLobby.js';
-import { categories } from './categories.js'; // Import your categories
+import { categories } from './Categories.js'; // Import your categories
 
 console.log("script.js is loaded");
 const socket = io(); // Initialize Socket.IO
