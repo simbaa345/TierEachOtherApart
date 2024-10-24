@@ -90,7 +90,6 @@ export function startGame(players) {
 
     // Function to handle submit responses
     function submitResponses() {
-        // Collect the responses and handle them as needed
         const tierCells = leftColumn.querySelectorAll('div');
         const results = {};
 
