@@ -113,10 +113,7 @@ export function GameSetup(hostGame, joinGame) {
         startButton.style.padding = '10px 20px';
         startButton.style.marginTop = '20px';
         startButton.disabled = players.length < 4; // Disable button if less than 4 players
-        startButton.addEventListener('click', () => {
-            alert('Game is starting!');
-            // Add logic to transition to the game part here
-        });
+        startButton.addEventListener('click', startGame); // Start game logic
 
         if (players[0].isHost) { // Only show for the host
             app.appendChild(startButton);
@@ -205,5 +202,28 @@ export function GameSetup(hostGame, joinGame) {
         app.appendChild(avatarsContainer);
     }
 
-    document.body.appendChild(container); // Append the main container to the body
+    // Function to start the game with a countdown
+    function startGame() {
+        const app = document.getElementById('app');
+        app.innerHTML = ''; // Clear previous content
+
+        const countdownMessage = document.createElement('h2');
+        countdownMessage.innerText = "Game starts in 5 seconds...";
+        countdownMessage.style.textAlign = 'center';
+        app.appendChild(countdownMessage);
+
+        let countdown = 5;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            countdownMessage.innerText = `Game starts in ${countdown} seconds...`;
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                app.innerHTML = '<h2 style="text-align: center;">Game Started!</h2>';
+                // Here you would transition to the game logic
+                // For example: loadTierList();
+            }
+        }, 1000);
+    }
+
+    return container;
 }
