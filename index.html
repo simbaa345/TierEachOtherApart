@@ -8,14 +8,24 @@
 </head>
 <body>
     <div id="app">
-        <h1 style="color: orange;">Welcome to Tier Each Other Apart</h1>
-        <input type="text" id="playerName" placeholder="Enter your name">
-        <button id="hostGame">Host Game</button>
+        <h1>Welcome to Tier Each Other Apart</h1>
+        <input type="text" id="playerName" placeholder="Enter your name" />
+        <input type="text" id="lobbyCode" placeholder="Enter lobby code (optional)" />
         <button id="joinGame">Join Game</button>
-        <div id="teamsContainer"></div>
+        <button id="hostGame">Host Game</button>
+
+        <div id="avatarSelection" style="display: none;">
+            <h2>Select Your Avatar</h2>
+            <div id="avatars"></div>
+            <button id="confirmAvatar">Confirm Avatar</button>
+            <button id="addBots" style="display: none;">Add Bots</button>
+        </div>
+
+        <div id="teamsContainer" style="display: none;"></div>
         <button id="createTeams" style="display: none;">Create Teams</button>
         <button id="startGame" style="display: none;">Start Game</button>
     </div>
+
     <script src="script.js"></script>
     <script src="GameSetup.js"></script>
     <script src="Game.js"></script>
