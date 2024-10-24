@@ -1,14 +1,8 @@
-// Categories.js
-
-export const categories = [
+const categories = [
     "Cereal Brands",
-    "Honeymoon Destinations",
-    "Movie Genres",
-    "Video Game Consoles",
-    "Ice Cream Flavors",
-    "Fictional Characters",
-    "Travel Destinations",
-    "Sports Teams",
-    "Music Genres",
-    "Board Games"
+    "Honeymoon Spots",
+    "Movies",
+    "Video Games",
+    "Fruits",
+    // Add more categories as needed
 ];
