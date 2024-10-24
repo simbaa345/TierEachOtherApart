@@ -73,10 +73,11 @@ function loadAvatars() {
     const avatarsDiv = document.getElementById('avatars');
     avatarsDiv.innerHTML = ''; // Clear previous avatars
 
-    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add your avatar file names here
+    // Ensure these filenames match your actual image files in the images folder
+    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png']; // Add your avatar file names here
     avatars.forEach((avatar, index) => {
         const img = document.createElement('img');
-        img.src = `images/${avatar}`;
+        img.src = `images/${avatar}`; // Ensure this path is correct
         img.className = 'avatar';
         img.alt = `Avatar ${index + 1}`;
         img.style.width = '50px';
@@ -111,9 +112,9 @@ function addBots(numBots) {
     const teamSelection = document.getElementById('teamSelection');
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
-        players.push({ name: botName, avatar: (i % 3) }); // Assigning avatars in a cycle
+        players.push({ name: botName, avatar: (i % 4) }); // Assigning avatars in a cycle
         const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/avatar${(i % 3) + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
+        botDiv.innerHTML = `<img src="images/avatar${(i % 4) + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
     // Update start game button if there are at least 4 players including bots
