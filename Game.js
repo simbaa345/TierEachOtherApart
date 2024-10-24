@@ -1,6 +1,4 @@
-// Game.js
-
-import { categories } from './Categories.js'; // Import the categories from Categories.js
+import { categories } from './Categories.js';
 
 export function startGame(players) {
     const app = document.getElementById('app');
