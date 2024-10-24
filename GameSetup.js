@@ -64,6 +64,7 @@ function hostGame() {
     loadAvatars();
 
     document.getElementById('confirmAvatar').onclick = () => confirmAvatar(name);
+    document.getElementById('addBots').onclick = addBots; // Ensure this is hooked up
 }
 
 function loadAvatars() {
@@ -128,9 +129,13 @@ function addBots() {
     const teamSelection = document.getElementById('teamSelection');
     const availableAvatars = [0, 1, 2, 3].filter(index => !players.some(player => player.avatar === index));
 
-    for (let i = 1; i <= numBots; i++) {
+    for (let i = 0; i < numBots; i++) {
+        if (i >= availableAvatars.length) {
+            alert('Not enough available avatars for the bots.');
+            break; // Exit if no more avatars are available
+        }
         const botName = `Bot ${players.length + 1}`; // Unique name for bots
-        const avatarIndex = availableAvatars[i - 1]; // Assign available avatars
+        const avatarIndex = availableAvatars[i]; // Assign available avatars
         players.push({ name: botName, avatar: avatarIndex }); // Assign avatar from available list
         const botDiv = document.createElement('div');
         botDiv.innerHTML = `<img src="images/avatar${avatarIndex + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
