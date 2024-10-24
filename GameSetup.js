@@ -1,3 +1,7 @@
+let players = [];
+let lobbyCode = '';
+const MAX_BOTS = 3;
+
 function setupGame() {
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -29,8 +33,6 @@ function joinGame() {
         <button id="startGame" disabled>Start Game</button>
     `;
     loadAvatars();
-
-    // Additional logic for avatar selection can be added here
 }
 
 function hostGame() {
@@ -42,14 +44,14 @@ function hostGame() {
         return;
     }
 
-    const lobbyCode = generateLobbyCode();
+    lobbyCode = generateLobbyCode();
     app.innerHTML = `
         <h2 style="color: orange;">Lobby Code: ${lobbyCode}</h2>
         <p>${name}, please select your avatar:</p>
         <div id="avatars"></div>
         <div id="botSelection">
-            <label for="numBots">Add Bots (0-3): </label>
-            <input type="number" id="numBots" min="0" max="3" value="0">
+            <label for="numBots">Add Bots (0-${MAX_BOTS}): </label>
+            <input type="number" id="numBots" min="0" max="${MAX_BOTS}" value="0">
             <button id="addBots">Add Bots</button>
         </div>
         <div id="teamSelection"></div>
@@ -57,24 +59,21 @@ function hostGame() {
     `;
     loadAvatars();
 
-    // Add bots functionality
     document.getElementById('addBots').onclick = () => {
         const numBots = parseInt(document.getElementById('numBots').value);
-        if (numBots < 0 || numBots > 3) {
+        if (numBots < 0 || numBots > MAX_BOTS) {
             alert('Please choose between 0 to 3 bots.');
             return;
         }
         addBots(numBots);
     };
 
-    // Start Game button functionality
     document.getElementById('startGame').onclick = () => {
-        const players = getPlayers();
         if (players.length < 4) {
             alert('You need at least 4 players to start the game.');
             return;
         }
-        startGame(players); // Replace with your game start logic
+        startGame(players); // Call the function to start the game
     };
 }
 
@@ -82,9 +81,8 @@ function addBots(numBots) {
     const app = document.getElementById('app');
     const teamSelection = document.getElementById('teamSelection');
     teamSelection.innerHTML = `<h3>Players:</h3>`;
-    const players = [document.getElementById('playerName').value]; // Include host
+    players = [document.getElementById('playerName').value]; // Include host
 
-    // Add bots
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
         players.push(botName);
@@ -93,7 +91,7 @@ function addBots(numBots) {
         teamSelection.appendChild(botDiv);
     }
 
-    // Display player list
+    // Display all players including bots
     players.forEach(player => {
         const playerDiv = document.createElement('div');
         playerDiv.innerText = player;
@@ -105,41 +103,7 @@ function addBots(numBots) {
     startGameButton.disabled = players.length < 4; // Enable if 4 or more players
 }
 
-function getPlayers() {
-    const players = [document.getElementById('playerName').value]; // Include host
-    const numBots = parseInt(document.getElementById('numBots').value);
-    for (let i = 1; i <= numBots; i++) {
-        players.push(`Bot ${i}`);
-    }
-    return players;
-}
-
-function loadAvatars() {
-    const avatarsDiv = document.getElementById('avatars');
-    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add more avatar names as needed
-    avatarsDiv.innerHTML = ''; // Clear previous avatars
-
-    avatars.forEach(avatar => {
-        const img = document.createElement('img');
-        img.src = `images/${avatar}`;
-        img.className = 'avatar';
-        img.style.borderRadius = '50%';
-        img.style.width = '50px';
-        img.style.height = '50px';
-        img.onclick = () => {
-            // Handle avatar selection
-            img.style.border = '2px solid orange'; // Highlight selected avatar
-            // Disable other avatars
-            avatarsDiv.querySelectorAll('img').forEach(otherImg => {
-                if (otherImg !== img) {
-                    otherImg.style.pointerEvents = 'none';
-                }
-            });
-        };
-        avatarsDiv.appendChild(img);
-    });
-}
-
+// Generate a random lobby code
 function generateLobbyCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
 }
