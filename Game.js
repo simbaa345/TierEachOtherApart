@@ -1,13 +1,10 @@
 let players = [];
 let currentPlayerIndex = 0;
 let timer;
-let tierListData = [];
-const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
 
 function startGame(playerList) {
     players = playerList;
     currentPlayerIndex = 0;
-    tierListData = getTierListCategories();
     showGameScreen();
     startCountdown();
 }
@@ -44,6 +41,7 @@ function startCountdown() {
 }
 
 function createTierList() {
+    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
     return TIER_OPTIONS.map(tier => `
         <div class="tier" data-tier="${tier}" style="border: 1px solid black; padding: 10px; margin: 5px; width: 80px; text-align: center;">
             <strong>${tier}</strong>
@@ -56,6 +54,7 @@ function loadCategoryItems() {
     const categoryItemsDiv = document.getElementById('categoryItems');
     categoryItemsDiv.innerHTML = '';
 
+    const tierListData = getTierListCategories();
     tierListData.forEach(item => {
         const itemDiv = document.createElement('div');
         itemDiv.innerText = item;
@@ -66,7 +65,7 @@ function loadCategoryItems() {
         categoryItemsDiv.appendChild(itemDiv);
     });
 
-    // Add drop functionality to each tier
+    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
     TIER_OPTIONS.forEach(tier => {
         const tierDiv = document.getElementById(`${tier}-items`);
         tierDiv.ondragover = (event) => {
@@ -85,6 +84,7 @@ function loadCategoryItems() {
 
 function submitRanking() {
     const rankings = {};
+    const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
     TIER_OPTIONS.forEach(tier => {
         const items = Array.from(document.getElementById(`${tier}-items`).children).map(item => item.innerText);
         rankings[tier] = items;
@@ -99,7 +99,7 @@ function getTierListCategories() {
     return ['Cereal A', 'Cereal B', 'Cereal C', 'Cereal D', 'Cereal E'];
 }
 
-// Add event listeners for the game start
+// Call event listeners for the game start if needed
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the game if needed or wait for the GameSetup.js to call startGame
+    // Initialize the game if needed or wait for GameSetup.js to call startGame
 });
