@@ -91,15 +91,4 @@ function submitRanking() {
     });
 
     console.log('Player Rankings:', rankings);
-    // Here you can send rankings to the server or process them as needed
-}
-
-function getTierListCategories() {
-    // Replace this with your logic to get categories for the players to rank
-    return ['Cereal A', 'Cereal B', 'Cereal C', 'Cereal D', 'Cereal E'];
-}
-
-// Call event listeners for the game start if needed
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the game if needed or wait for GameSetup.js to call startGame
-});
+   
