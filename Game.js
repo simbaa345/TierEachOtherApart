@@ -48,7 +48,6 @@ function loadOptions() {
     const optionList = document.getElementById('optionList');
     const categories = ['Cereal Brands', 'Honeymoon Destinations']; // Example categories
     const options = categories.map(category => {
-        // Generate random items for demonstration
         return Array.from({ length: 10 }, (_, i) => `${category} ${i + 1}`);
     }).flat();
 
@@ -67,7 +66,7 @@ function setupDragAndDrop() {
     const tierCells = document.querySelectorAll('.tier-cell');
     tierCells.forEach(cell => {
         cell.ondragover = (e) => {
-            e.preventDefault(); // Prevent default to allow drop
+            e.preventDefault();
         };
 
         cell.ondrop = (e) => {
@@ -95,7 +94,6 @@ function startTimer() {
     }, 1000);
 }
 
-// Function to split players into teams
 function splitPlayersIntoTeams() {
     const teams = {};
     players.forEach((player, index) => {
@@ -109,33 +107,17 @@ function splitPlayersIntoTeams() {
 }
 
 // Ensure the startGame function is called when the Start Game button is clicked
-document.getElementById('startGame').onclick = () => {
-    if (players.length >= 4) { // Check for minimum players
-        const teams = splitPlayersIntoTeams();
-        console.log('Teams:', teams); // Log the teams to verify
-        startGame(); // Start the countdown and game flow
-    } else {
-        alert('You need at least 4 players to start the game.');
-    }
-};
-
-// Call this function where appropriate in your game setup logic
-function initializeGame() {
+document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('startGame');
     if (startButton) {
         startButton.onclick = () => {
             if (players.length >= 4) {
                 const teams = splitPlayersIntoTeams();
                 console.log('Teams:', teams); // Log the teams to verify
-                startGame();
+                startGame(); // Start the countdown
             } else {
                 alert('You need at least 4 players to start the game.');
             }
         };
     }
-}
-
-// Initialize game settings when the document is ready
-document.addEventListener('DOMContentLoaded', () => {
-    initializeGame();
 });
