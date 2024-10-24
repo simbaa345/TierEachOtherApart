@@ -49,13 +49,13 @@ export function GameSetup(hostGame, joinGame) {
         container.innerHTML = `
             <h3 style="text-align: center;">How many bots would you like to add? (0-3)</h3>
             <input type="number" id="botCount" min="0" max="3" value="0" style="width: 50px; text-align: center;" />
-            <button id="startGameButton" style="padding: 10px 20px; font-size: 1em;">Start Game</button>
+            <button id="addBotsButton" style="padding: 10px 20px; font-size: 1em;">Add Bots</button>
         `;
 
         const botCountInput = container.querySelector('#botCount');
-        const startGameButton = container.querySelector('#startGameButton');
+        const addBotsButton = container.querySelector('#addBotsButton');
 
-        startGameButton.addEventListener('click', () => {
+        addBotsButton.addEventListener('click', () => {
             const botCount = parseInt(botCountInput.value);
             players.push({ name: playerName, avatar: null, team: null, isHost: true });
             for (let i = 1; i <= botCount; i++) {
@@ -110,7 +110,7 @@ export function GameSetup(hostGame, joinGame) {
 
         // Update team assignment
         assignTeams();
-        
+
         // Display the team name and avatars
         const teamName = players[playerIndex].team;
         const teamMembers = players.filter(p => p.team === teamName);
