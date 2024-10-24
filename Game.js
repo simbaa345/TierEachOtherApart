@@ -40,13 +40,8 @@ function displayTierList() {
         <div id="timer" style="color: red;">Time Left: <span id="timeLeft">${TIME_LIMIT}</span> seconds</div>
     `;
     
-    // Load options from categories
     loadOptions();
-    
-    // Set up drag-and-drop
     setupDragAndDrop();
-    
-    // Start the timer
     startTimer();
 }
 
@@ -101,5 +96,20 @@ function startTimer() {
     }, 1000);
 }
 
-// Start the game when the player clicks "Start Game"
-document.getElementById('startGame').onclick = startGame;
+// Ensure the startGame function is called when the Start Game button is clicked
+document.getElementById('startGame').onclick = () => {
+    startGame(); // Start the countdown and game flow
+};
+
+// Call this function where appropriate in your game setup logic
+function initializeGame() {
+    const startButton = document.getElementById('startGame');
+    if (startButton) {
+        startButton.onclick = startGame;
+    }
+}
+
+// Initialize game settings when the document is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame();
+});
