@@ -29,10 +29,13 @@ function joinGame() {
     app.innerHTML = `
         <h2 style="color: orange;">Please select your avatar:</h2>
         <div id="avatars"></div>
+        <button id="confirmAvatar">Confirm Avatar</button>
         <div id="teamSelection"></div>
         <button id="startGame" disabled>Start Game</button>
     `;
     loadAvatars();
+
+    document.getElementById('confirmAvatar').onclick = () => confirmAvatar(name);
 }
 
 function hostGame() {
@@ -49,25 +52,18 @@ function hostGame() {
         <h2 style="color: orange;">Lobby Code: ${lobbyCode}</h2>
         <p>${name}, please select your avatar:</p>
         <div id="avatars"></div>
+        <button id="confirmAvatar">Confirm Avatar</button>
         <div id="botSelection">
             <label for="numBots">Add Bots (0-${MAX_BOTS}): </label>
             <input type="number" id="numBots" min="0" max="${MAX_BOTS}" value="0">
-            <button id="addBots">Add Bots</button>
+            <button id="addBots" disabled>Add Bots</button>
         </div>
         <div id="teamSelection"></div>
         <button id="startGame" disabled>Start Game</button>
     `;
     loadAvatars();
 
-    // Handle bot addition
-    document.getElementById('addBots').onclick = () => {
-        const numBots = parseInt(document.getElementById('numBots').value);
-        if (numBots < 0 || numBots > MAX_BOTS) {
-            alert('Please choose between 0 to 3 bots.');
-            return;
-        }
-        addBots(numBots);
-    };
+    document.getElementById('confirmAvatar').onclick = () => confirmAvatar(name);
 }
 
 function loadAvatars() {
@@ -89,9 +85,18 @@ function loadAvatars() {
     });
 }
 
+let selectedAvatarIndex = null;
+
 function selectAvatar(index) {
-    const name = document.getElementById('playerName').value;
-    if (!name) return alert('Please enter your name before selecting an avatar.');
+    selectedAvatarIndex = index; // Store the selected avatar index
+    alert(`You have selected Avatar ${index + 1}`);
+}
+
+function confirmAvatar(name) {
+    if (selectedAvatarIndex === null) {
+        alert('Please select an avatar before proceeding.');
+        return;
+    }
 
     // Check if player already exists
     const existingPlayer = players.find(player => player.name === name);
@@ -101,27 +106,34 @@ function selectAvatar(index) {
     }
 
     // Add player with selected avatar
-    players.push({ name, avatar: index });
+    players.push({ name, avatar: selectedAvatarIndex });
     document.getElementById('avatars').innerHTML = ''; // Clear avatars after selection
 
     // Display selected avatar
     const selectedAvatar = document.createElement('div');
-    selectedAvatar.innerHTML = `<img src="images/avatar${index + 1}.png" style="border-radius: 50%; width: 50px; height: 50px;"> ${name}`;
+    selectedAvatar.innerHTML = `<img src="images/avatar${selectedAvatarIndex + 1}.png" style="border-radius: 50%; width: 50px; height: 50px;"> ${name}`;
     document.getElementById('teamSelection').appendChild(selectedAvatar);
 
-    // Enable the start game button if conditions are met
+    // Enable the Add Bots button
+    document.getElementById('addBots').disabled = false;
+
+    // Check if enough players are present for starting the game
     const startGameButton = document.getElementById('startGame');
     startGameButton.disabled = players.length < 4; // Check if 4 or more players
 }
 
 // Add bots and display them in the team selection
-function addBots(numBots) {
+function addBots() {
+    const numBots = parseInt(document.getElementById('numBots').value);
     const teamSelection = document.getElementById('teamSelection');
+    const availableAvatars = [0, 1, 2, 3].filter(index => !players.some(player => player.avatar === index));
+
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
-        players.push({ name: botName, avatar: (i % 4) }); // Assign avatars in a cycle
+        const avatarIndex = availableAvatars[i - 1]; // Assign available avatars
+        players.push({ name: botName, avatar: avatarIndex }); // Assign avatar from available list
         const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/avatar${(i % 4) + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
+        botDiv.innerHTML = `<img src="images/avatar${avatarIndex + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
     const startGameButton = document.getElementById('startGame');
