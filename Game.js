@@ -2,6 +2,40 @@ let players = [];
 let countdownTimer;
 const TIME_LIMIT = 120; // 2 minutes for tier ranking
 
+// Function to create teams
+function createTeams() {
+    if (players.length < 4) {
+        alert('You need at least 4 players to create teams.');
+        return;
+    }
+
+    // Shuffle players array
+    players = shuffleArray(players);
+
+    const teamsContainer = document.getElementById('teamsContainer');
+    teamsContainer.innerHTML = ''; // Clear existing teams
+
+    // Create teams
+    for (let i = 0; i < players.length; i += 2) {
+        const teamNumber = Math.floor(i / 2) + 1;
+        const teamDiv = document.createElement('div');
+        teamDiv.innerHTML = `<strong>Team ${teamNumber}:</strong> ${players[i].name}, ${players[i + 1] ? players[i + 1].name : 'Bot'}`;
+        teamsContainer.appendChild(teamDiv);
+    }
+
+    // Show the Start Game button
+    document.getElementById('startGame').style.display = 'block';
+}
+
+// Helper function to shuffle an array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+    return array;
+}
+
 function startGame() {
     const app = document.getElementById('app');
     app.innerHTML = `<h2 style="color: orange;">Game Starting in <span id="countdown">5</span> seconds!</h2>`;
@@ -94,30 +128,18 @@ function startTimer() {
     }, 1000);
 }
 
-function splitPlayersIntoTeams() {
-    const teams = {};
-    players.forEach((player, index) => {
-        const teamNumber = Math.floor(index / 2) + 1; // 2 players per team
-        if (!teams[`Team ${teamNumber}`]) {
-            teams[`Team ${teamNumber}`] = [];
-        }
-        teams[`Team ${teamNumber}`].push(player);
-    });
-    return teams;
-}
-
 // Ensure the startGame function is called when the Start Game button is clicked
 document.addEventListener('DOMContentLoaded', () => {
+    const createTeamsButton = document.getElementById('createTeams');
     const startButton = document.getElementById('startGame');
+
+    if (createTeamsButton) {
+        createTeamsButton.onclick = createTeams;
+    }
+
     if (startButton) {
         startButton.onclick = () => {
-            if (players.length >= 4) {
-                const teams = splitPlayersIntoTeams();
-                console.log('Teams:', teams); // Log the teams to verify
-                startGame(); // Start the countdown
-            } else {
-                alert('You need at least 4 players to start the game.');
-            }
+            startGame();
         };
     }
 });
