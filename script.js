@@ -10,13 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomIndex = Math.floor(Math.random() * categories.length);
         return categories[randomIndex];
     }
+    
+    // Function to generate a random lobby code
+function generateLobbyCode(length = 6) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let lobbyCode = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        lobbyCode += characters[randomIndex];
+    }
+    return lobbyCode;
+}
 
     // Start the game and handle lobby creation/joining
     const startGame = (playerName, isCreating, lobbyCode) => {
         const selectedCategory = getRandomCategory(); // Get a random category
 
         if (isCreating) {
-            const newLobbyCode = 'XYZ123'; // You'd generate a unique lobby code here
+            const newLobbyCode = generateLobbyCode();
             app.innerHTML = ''; // Clear the app
             app.appendChild(GameLobby(newLobbyCode, [{ name: playerName }], selectedCategory)); // Pass the selected category
         } else {
