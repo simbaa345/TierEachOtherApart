@@ -1,5 +1,4 @@
 let players = [];
-let currentPlayerIndex = 0;
 let countdownTimer;
 const TIME_LIMIT = 120; // 2 minutes for tier ranking
 
@@ -96,16 +95,43 @@ function startTimer() {
     }, 1000);
 }
 
+// Function to split players into teams
+function splitPlayersIntoTeams() {
+    const teams = {};
+    players.forEach((player, index) => {
+        const teamNumber = Math.floor(index / 2) + 1; // 2 players per team
+        if (!teams[`Team ${teamNumber}`]) {
+            teams[`Team ${teamNumber}`] = [];
+        }
+        teams[`Team ${teamNumber}`].push(player);
+    });
+    return teams;
+}
+
 // Ensure the startGame function is called when the Start Game button is clicked
 document.getElementById('startGame').onclick = () => {
-    startGame(); // Start the countdown and game flow
+    if (players.length >= 4) { // Check for minimum players
+        const teams = splitPlayersIntoTeams();
+        console.log('Teams:', teams); // Log the teams to verify
+        startGame(); // Start the countdown and game flow
+    } else {
+        alert('You need at least 4 players to start the game.');
+    }
 };
 
 // Call this function where appropriate in your game setup logic
 function initializeGame() {
     const startButton = document.getElementById('startGame');
     if (startButton) {
-        startButton.onclick = startGame;
+        startButton.onclick = () => {
+            if (players.length >= 4) {
+                const teams = splitPlayersIntoTeams();
+                console.log('Teams:', teams); // Log the teams to verify
+                startGame();
+            } else {
+                alert('You need at least 4 players to start the game.');
+            }
+        };
     }
 }
 
