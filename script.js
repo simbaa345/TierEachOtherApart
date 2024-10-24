@@ -1,3 +1,5 @@
+console.log("script.js is loaded");
+
 import { GameSetup } from './GameSetup.js';
 import { GameLobby } from './GameLobby.js';
 import { categories } from './categories.js'; // Import your categories
