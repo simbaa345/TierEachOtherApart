@@ -1,17 +1,36 @@
-import { categories } from './Categories.js';
-
-export function setupGame() {
+function setupGame() {
     const app = document.getElementById('app');
     app.innerHTML = `
-        <h1>Welcome to Tier Each Other Apart</h1>
+        <h1 style="color: orange; text-align: center;">Welcome to Tier Each Other Apart</h1>
         <input type="text" id="playerName" placeholder="Enter your name" />
-        <button id="hostGame">Host Game</button>
-        <button id="joinGame">Join Game</button>
-        <div id="lobby" style="display:none;"></div>
+        <div>
+            <button id="joinGame">Join Game</button>
+            <button id="hostGame">Host Game</button>
+        </div>
     `;
 
-    document.getElementById('hostGame').onclick = hostGame;
     document.getElementById('joinGame').onclick = joinGame;
+    document.getElementById('hostGame').onclick = hostGame;
+}
+
+function joinGame() {
+    const app = document.getElementById('app');
+    const name = document.getElementById('playerName').value;
+
+    if (!name) {
+        alert('Please enter your name.');
+        return;
+    }
+
+    app.innerHTML = `
+        <h2 style="color: orange;">Please select your avatar:</h2>
+        <div id="avatars"></div>
+        <div id="teamSelection"></div>
+        <button id="startGame" disabled>Start Game</button>
+    `;
+    loadAvatars();
+
+    // Additional logic for avatar selection can be added here
 }
 
 function hostGame() {
@@ -25,7 +44,7 @@ function hostGame() {
 
     const lobbyCode = generateLobbyCode();
     app.innerHTML = `
-        <h2>Lobby Code: ${lobbyCode}</h2>
+        <h2 style="color: orange;">Lobby Code: ${lobbyCode}</h2>
         <p>${name}, please select your avatar:</p>
         <div id="avatars"></div>
         <div id="botSelection">
@@ -38,6 +57,7 @@ function hostGame() {
     `;
     loadAvatars();
 
+    // Add bots functionality
     document.getElementById('addBots').onclick = () => {
         const numBots = parseInt(document.getElementById('numBots').value);
         if (numBots < 0 || numBots > 3) {
@@ -46,35 +66,83 @@ function hostGame() {
         }
         addBots(numBots);
     };
+
+    // Start Game button functionality
+    document.getElementById('startGame').onclick = () => {
+        const players = getPlayers();
+        if (players.length < 4) {
+            alert('You need at least 4 players to start the game.');
+            return;
+        }
+        startGame(players); // Replace with your game start logic
+    };
 }
 
 function addBots(numBots) {
     const app = document.getElementById('app');
     const teamSelection = document.getElementById('teamSelection');
     teamSelection.innerHTML = `<h3>Players:</h3>`;
-    const players = [document.getElementById('playerName').value]; // Add host
+    const players = [document.getElementById('playerName').value]; // Include host
 
     // Add bots
     for (let i = 1; i <= numBots; i++) {
         const botName = `Bot ${i}`;
         players.push(botName);
-        const botAvatar = `bot_avatar${i}.png`; // Adjust the bot avatar names
         const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/${botAvatar}" class="avatar" alt="${botName}"> ${botName}`;
+        botDiv.innerHTML = `<img src="images/bot_avatar${i}.png" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
 
-    // Show the player list for teams
+    // Display player list
     players.forEach(player => {
         const playerDiv = document.createElement('div');
         playerDiv.innerText = player;
         teamSelection.appendChild(playerDiv);
     });
 
-    // Logic for enabling the Start Game button
+    // Enable Start Game button if there are enough players
     const startGameButton = document.getElementById('startGame');
-    if (players.length >= 4) {
-        startGameButton.disabled = false;
-    }
+    startGameButton.disabled = players.length < 4; // Enable if 4 or more players
 }
 
+function getPlayers() {
+    const players = [document.getElementById('playerName').value]; // Include host
+    const numBots = parseInt(document.getElementById('numBots').value);
+    for (let i = 1; i <= numBots; i++) {
+        players.push(`Bot ${i}`);
+    }
+    return players;
+}
+
+function loadAvatars() {
+    const avatarsDiv = document.getElementById('avatars');
+    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add more avatar names as needed
+    avatarsDiv.innerHTML = ''; // Clear previous avatars
+
+    avatars.forEach(avatar => {
+        const img = document.createElement('img');
+        img.src = `images/${avatar}`;
+        img.className = 'avatar';
+        img.style.borderRadius = '50%';
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.onclick = () => {
+            // Handle avatar selection
+            img.style.border = '2px solid orange'; // Highlight selected avatar
+            // Disable other avatars
+            avatarsDiv.querySelectorAll('img').forEach(otherImg => {
+                if (otherImg !== img) {
+                    otherImg.style.pointerEvents = 'none';
+                }
+            });
+        };
+        avatarsDiv.appendChild(img);
+    });
+}
+
+function generateLobbyCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
+}
+
+// Call setupGame on page load
+document.addEventListener('DOMContentLoaded', setupGame);
