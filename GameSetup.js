@@ -129,13 +129,15 @@ function addBots() {
     const availableAvatars = [0, 1, 2, 3].filter(index => !players.some(player => player.avatar === index));
 
     for (let i = 1; i <= numBots; i++) {
-        const botName = `Bot ${i}`;
+        const botName = `Bot ${players.length + 1}`; // Unique name for bots
         const avatarIndex = availableAvatars[i - 1]; // Assign available avatars
         players.push({ name: botName, avatar: avatarIndex }); // Assign avatar from available list
         const botDiv = document.createElement('div');
         botDiv.innerHTML = `<img src="images/avatar${avatarIndex + 1}.png" class="avatar" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
         teamSelection.appendChild(botDiv);
     }
+
+    // Check if we can start the game now that bots are added
     const startGameButton = document.getElementById('startGame');
     startGameButton.disabled = players.length < 4; // Enable if 4 or more players
 }
