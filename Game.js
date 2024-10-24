@@ -5,11 +5,9 @@ document.getElementById('createTeams').onclick = () => {
     }
 
     players = shuffleArray(players);
-
     const teamsContainer = document.getElementById('teamsContainer');
-    teamsContainer.innerHTML = '<h2>Teams:</h2>'; // Clear existing teams
+    teamsContainer.innerHTML = '<h2>Teams:</h2>';
 
-    // Create teams
     for (let i = 0; i < players.length; i += 2) {
         const teamDiv = document.createElement('div');
         teamDiv.innerHTML = `<strong>Team ${Math.floor(i / 2) + 1}:</strong> ${players[i].name} (${players[i].avatar}), ${players[i + 1] ? players[i + 1].name + ` (${players[i + 1].avatar})` : 'Bot'}`;
@@ -17,7 +15,7 @@ document.getElementById('createTeams').onclick = () => {
     }
 
     teamsContainer.style.display = 'block';
-    document.getElementById('startGame').style.display = 'block'; // Show Start Game button
+    document.getElementById('startGame').style.display = 'block';
 };
 
 function shuffleArray(array) {
@@ -46,53 +44,83 @@ function startGame() {
             clearInterval(countdownInterval);
             countdownContainer.innerHTML = "Game Started!";
             setTimeout(() => {
-                // Transition to game logic here
-                countdownContainer.innerHTML = ""; // Clear countdown message
-                displayGame(); // Call the function to display the game
+                countdownContainer.innerHTML = ""; 
+                displayGame(); 
             }, 1000);
         }
     }, 1000);
 }
 
 function displayGame() {
-    // Implement the game UI here with tier lists
     const gameContainer = document.createElement('div');
     gameContainer.id = 'gameContainer';
     document.getElementById('app').appendChild(gameContainer);
 
-    // Example structure of the game UI
+    // Black table structure
     gameContainer.innerHTML = `
         <h2>Time Remaining: <span id="timer">120</span> seconds</h2>
         <div id="tierList" style="display: flex;">
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>S</h3>
-                <div class="tier-cell" data-tier="S"></div>
+                <div class="tier-cell" data-tier="S" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>A</h3>
-                <div class="tier-cell" data-tier="A"></div>
+                <div class="tier-cell" data-tier="A" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>B</h3>
-                <div class="tier-cell" data-tier="B"></div>
+                <div class="tier-cell" data-tier="B" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>C</h3>
-                <div class="tier-cell" data-tier="C"></div>
+                <div class="tier-cell" data-tier="C" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>D</h3>
-                <div class="tier-cell" data-tier="D"></div>
+                <div class="tier-cell" data-tier="D" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
-            <div style="border: 1px solid black; padding: 10px;">
+            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
                 <h3>F</h3>
-                <div class="tier-cell" data-tier="F"></div>
+                <div class="tier-cell" data-tier="F" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
             </div>
         </div>
+        <div id="optionsContainer" style="margin-top: 20px;"></div>
         <button id="submitRankings">Submit Rankings</button>
     `;
 
-    startTimer(120); // Start the 2-minute timer
+    populateOptions();
+    startTimer(120); 
+}
+
+function populateOptions() {
+    const options = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew']; // Example categories
+    const optionsContainer = document.getElementById('optionsContainer');
+    
+    options.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.textContent = option;
+        optionDiv.draggable = true;
+        optionDiv.ondragstart = (event) => {
+            event.dataTransfer.setData('text', option);
+        };
+        optionsContainer.appendChild(optionDiv);
+    });
+}
+
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+function drop(event) {
+    event.preventDefault();
+    const data = event.dataTransfer.getData('text');
+    const tierCell = event.target;
+
+    // Append dragged item to the tier cell
+    const itemDiv = document.createElement('div');
+    itemDiv.textContent = data;
+    tierCell.appendChild(itemDiv);
 }
 
 function startTimer(duration) {
@@ -106,7 +134,7 @@ function startTimer(duration) {
         if (timer <= 0) {
             clearInterval(timerInterval);
             alert("Time's up! Submitting rankings...");
-            // Implement the logic for submitting rankings here
+            // Implement logic for submitting rankings here
         }
     }, 1000);
 }
