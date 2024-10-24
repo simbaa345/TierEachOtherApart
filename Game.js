@@ -59,31 +59,21 @@ function displayGame() {
     // Black table structure
     gameContainer.innerHTML = `
         <h2>Time Remaining: <span id="timer">120</span> seconds</h2>
-        <div id="tierList" style="display: flex;">
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>S</h3>
-                <div class="tier-cell" data-tier="S" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>A</h3>
-                <div class="tier-cell" data-tier="A" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>B</h3>
-                <div class="tier-cell" data-tier="B" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>C</h3>
-                <div class="tier-cell" data-tier="C" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>D</h3>
-                <div class="tier-cell" data-tier="D" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
-            <div style="border: 1px solid black; background-color: black; color: white; padding: 10px; margin-right: 10px;">
-                <h3>F</h3>
-                <div class="tier-cell" data-tier="F" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-            </div>
+        <div style="display: flex; justify-content: space-between; width: 300px;">
+            <div style="width: 50px; text-align: center; color: white;">S</div>
+            <div style="width: 50px; text-align: center; color: white;">A</div>
+            <div style="width: 50px; text-align: center; color: white;">B</div>
+            <div style="width: 50px; text-align: center; color: white;">C</div>
+            <div style="width: 50px; text-align: center; color: white;">D</div>
+            <div style="width: 50px; text-align: center; color: white;">F</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; border: 2px solid black; background-color: black; color: white;">
+            <div style="width: 50px; padding: 10px;"></div>
+            <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div style="width: 50px; padding: 10px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
         </div>
         <div id="optionsContainer" style="margin-top: 20px;"></div>
         <button id="submitRankings">Submit Rankings</button>
@@ -120,6 +110,10 @@ function drop(event) {
     // Append dragged item to the tier cell
     const itemDiv = document.createElement('div');
     itemDiv.textContent = data;
+    itemDiv.style.backgroundColor = 'white';
+    itemDiv.style.color = 'black';
+    itemDiv.style.padding = '5px';
+    itemDiv.style.margin = '2px';
     tierCell.appendChild(itemDiv);
 }
 
