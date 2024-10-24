@@ -1,124 +1,140 @@
-import { categories } from './Categories.js';
-
-export function startGame(players) {
+function setupGame() {
     const app = document.getElementById('app');
-    app.innerHTML = ''; // Clear previous content
+    app.innerHTML = `
+        <h1 style="color: orange; text-align: center;">Welcome to Tier Each Other Apart</h1>
+        <input type="text" id="playerName" placeholder="Enter your name" />
+        <div>
+            <button id="joinGame">Join Game</button>
+            <button id="hostGame">Host Game</button>
+        </div>
+    `;
 
-    // Create the tier list layout
-    const tierListContainer = document.createElement('div');
-    tierListContainer.style.display = 'flex';
-    tierListContainer.style.justifyContent = 'space-around';
-    tierListContainer.style.marginTop = '20px';
+    document.getElementById('joinGame').onclick = joinGame;
+    document.getElementById('hostGame').onclick = hostGame;
+}
 
-    const leftColumn = document.createElement('div');
-    leftColumn.style.width = '100px';
+function joinGame() {
+    const app = document.getElementById('app');
+    const name = document.getElementById('playerName').value;
 
-    const tierLabels = ['S', 'A', 'B', 'C', 'D', 'F'];
-    tierLabels.forEach(label => {
-        const tierCell = document.createElement('div');
-        tierCell.innerText = label;
-        tierCell.style.border = '2px solid black';
-        tierCell.style.height = '100px';
-        tierCell.style.textAlign = 'center';
-        tierCell.style.lineHeight = '100px'; // Center text vertically
-        tierCell.style.fontSize = '24px';
-        tierCell.style.backgroundColor = '#f0f0f0';
-        tierCell.dataset.tier = label; // Use data attribute for dragging
-        leftColumn.appendChild(tierCell);
-    });
+    if (!name) {
+        alert('Please enter your name.');
+        return;
+    }
 
-    const rightColumn = document.createElement('div');
-    rightColumn.style.flexGrow = '1';
-    rightColumn.style.border = '2px solid black';
-    rightColumn.style.height = '600px'; // Set height for the game area
+    app.innerHTML = `
+        <h2 style="color: orange;">Please select your avatar:</h2>
+        <div id="avatars"></div>
+        <div id="teamSelection"></div>
+        <button id="startGame" disabled>Start Game</button>
+    `;
+    loadAvatars();
 
-    tierListContainer.appendChild(leftColumn);
-    tierListContainer.appendChild(rightColumn);
-    app.appendChild(tierListContainer);
+    // Add logic for selecting avatar and team selection
+}
 
-    // Create the drag-and-drop items from categories
-    const categoryContainer = document.createElement('div');
-    categoryContainer.style.marginTop = '20px';
-    categoryContainer.style.display = 'flex';
-    categoryContainer.style.flexWrap = 'wrap';
-    categoryContainer.style.justifyContent = 'center';
+function hostGame() {
+    const app = document.getElementById('app');
+    const name = document.getElementById('playerName').value;
 
-    categories.forEach(item => {
-        const categoryItem = document.createElement('div');
-        categoryItem.innerText = item;
-        categoryItem.style.border = '1px solid #000';
-        categoryItem.style.margin = '5px';
-        categoryItem.style.padding = '10px';
-        categoryItem.style.cursor = 'move';
-        categoryItem.draggable = true;
+    if (!name) {
+        alert('Please enter your name.');
+        return;
+    }
 
-        categoryItem.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', item);
-        });
+    const lobbyCode = generateLobbyCode();
+    app.innerHTML = `
+        <h2 style="color: orange;">Lobby Code: ${lobbyCode}</h2>
+        <p>${name}, please select your avatar:</p>
+        <div id="avatars"></div>
+        <div id="botSelection">
+            <label for="numBots">Add Bots (0-3): </label>
+            <input type="number" id="numBots" min="0" max="3" value="0">
+            <button id="addBots">Add Bots</button>
+        </div>
+        <div id="teamSelection"></div>
+        <button id="startGame" disabled>Start Game</button>
+    `;
+    loadAvatars();
 
-        categoryContainer.appendChild(categoryItem);
-    });
-
-    app.appendChild(categoryContainer);
-
-    // Timer
-    let timeLeft = 120; // 2 minutes
-    const timerDisplay = document.createElement('h2');
-    timerDisplay.innerText = `Time left: ${timeLeft} seconds`;
-    app.appendChild(timerDisplay);
-
-    const timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.innerText = `Time left: ${timeLeft} seconds`;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            showSubmitButton(); // Show submit button when time is up
+    document.getElementById('addBots').onclick = () => {
+        const numBots = parseInt(document.getElementById('numBots').value);
+        if (numBots < 0 || numBots > 3) {
+            alert('Please choose between 0 to 3 bots.');
+            return;
         }
-    }, 1000);
+        addBots(numBots);
+    };
 
-    // Function to show the submit button
-    function showSubmitButton() {
-        const submitButton = document.createElement('button');
-        submitButton.innerText = 'Submit';
-        submitButton.style.padding = '10px 20px';
-        submitButton.style.marginTop = '20px';
-        submitButton.addEventListener('click', submitResponses);
-        app.appendChild(submitButton);
+    // Event listener for Start Game button
+    document.getElementById('startGame').onclick = () => {
+        startGame(getPlayers()); // Get players including bots and start the game
+    };
+}
+
+function addBots(numBots) {
+    const app = document.getElementById('app');
+    const teamSelection = document.getElementById('teamSelection');
+    teamSelection.innerHTML = `<h3>Players:</h3>`;
+    const players = [document.getElementById('playerName').value]; // Add host
+
+    // Add bots
+    for (let i = 1; i <= numBots; i++) {
+        const botName = `Bot ${i}`;
+        players.push(botName);
+        const botAvatar = `bot_avatar${i}.png`; // Adjust the bot avatar names
+        const botDiv = document.createElement('div');
+        botDiv.innerHTML = `<img src="images/${botAvatar}" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
+        teamSelection.appendChild(botDiv);
     }
 
-    // Function to handle submit responses
-    function submitResponses() {
-        const tierCells = leftColumn.querySelectorAll('div');
-        const results = {};
-
-        tierCells.forEach(cell => {
-            const tier = cell.dataset.tier;
-            results[tier] = [...cell.childNodes].map(node => node.innerText); // Get items in each tier
-        });
-
-        console.log('Player Responses:', results); // Replace with your logic to handle the data
-        alert('Responses submitted!'); // Feedback for now
-    }
-
-    // Add drop functionality to the tier cells
-    leftColumn.querySelectorAll('div').forEach(cell => {
-        cell.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Allow drop
-        });
-
-        cell.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const item = e.dataTransfer.getData('text/plain');
-            const tier = cell.dataset.tier;
-
-            const itemDiv = document.createElement('div');
-            itemDiv.innerText = item;
-            itemDiv.style.border = '1px solid #ccc';
-            itemDiv.style.margin = '5px';
-            itemDiv.style.padding = '5px';
-            itemDiv.style.backgroundColor = '#e0e0e0';
-
-            cell.appendChild(itemDiv); // Add item to the respective tier
-        });
+    // Show the player list for teams
+    players.forEach(player => {
+        const playerDiv = document.createElement('div');
+        playerDiv.innerText = player;
+        teamSelection.appendChild(playerDiv);
     });
+
+    // Enable the Start Game button if there are enough players
+    const startGameButton = document.getElementById('startGame');
+    if (players.length >= 4) {
+        startGameButton.disabled = false;
+    }
+}
+
+function getPlayers() {
+    const players = [document.getElementById('playerName').value]; // Include host
+    const numBots = parseInt(document.getElementById('numBots').value);
+    for (let i = 1; i <= numBots; i++) {
+        players.push(`Bot ${i}`);
+    }
+    return players;
+}
+
+function loadAvatars() {
+    const avatarsDiv = document.getElementById('avatars');
+    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add more avatar names as needed
+    avatars.forEach(avatar => {
+        const img = document.createElement('img');
+        img.src = `images/${avatar}`;
+        img.className = 'avatar';
+        img.style.borderRadius = '50%';
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.onclick = () => {
+            // Handle avatar selection logic
+            img.style.border = '2px solid orange'; // Highlight selected avatar
+            // Disable other avatars
+            avatarsDiv.querySelectorAll('img').forEach(otherImg => {
+                if (otherImg !== img) {
+                    otherImg.style.pointerEvents = 'none';
+                }
+            });
+        };
+        avatarsDiv.appendChild(img);
+    });
+}
+
+function generateLobbyCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
 }
