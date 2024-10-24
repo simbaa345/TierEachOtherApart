@@ -3,13 +3,17 @@
 export function GameSetup(hostGame, joinGame) {
     const container = document.createElement('div');
 
-    // Initial Welcome Message and Input
+    // Epic Welcome Message
     container.innerHTML = `
-        <h2>Welcome to Tier Each Other Apart</h2>
-        <label for="playerName">Enter your name:</label>
-        <input type="text" id="playerName" placeholder="Your name" />
-        <button id="joinButton">Join Game</button>
-        <button id="hostButton">Host Game</button>
+        <h2 style="text-align: center; font-size: 2.5em; color: #ff6600; font-weight: bold;">
+            Welcome to Tier Each Other Apart
+        </h2>
+        <label for="playerName" style="font-size: 1.2em;">Enter your name:</label>
+        <input type="text" id="playerName" placeholder="Your name" style="padding: 10px; font-size: 1em; width: 200px;" />
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="joinButton" style="padding: 10px 20px; font-size: 1em; margin-right: 10px;">Join Game</button>
+            <button id="hostButton" style="padding: 10px 20px; font-size: 1em;">Host Game</button>
+        </div>
     `;
 
     const playerNameInput = container.querySelector('#playerName');
@@ -38,10 +42,13 @@ export function GameSetup(hostGame, joinGame) {
 
     // Function to show avatar selection after joining a game
     function showAvatarSelection(playerName) {
-        container.innerHTML = `<h3>Select your avatar, ${playerName}:</h3>`;
+        container.innerHTML = `<h3 style="text-align: center;">Select your avatar, ${playerName}:</h3>`;
         
         const avatarSelection = document.createElement('div');
         avatarSelection.id = 'avatarSelection';
+        avatarSelection.style.display = 'flex';
+        avatarSelection.style.justifyContent = 'center';
+        avatarSelection.style.gap = '10px'; // Space between avatars
 
         // List of avatars (you can add more)
         const avatars = ['avatar1', 'avatar2', 'avatar3'];
@@ -51,6 +58,9 @@ export function GameSetup(hostGame, joinGame) {
             img.alt = avatar;
             img.className = 'avatar';
             img.setAttribute('data-avatar', avatar);
+            img.style.width = '50px'; // Set a smaller size for the avatar
+            img.style.height = '50px';
+            img.style.borderRadius = '50%'; // Make the avatar circular
             img.style.cursor = 'pointer'; // Change cursor to pointer for interactivity
 
             // Avatar selection logic
@@ -72,19 +82,26 @@ export function GameSetup(hostGame, joinGame) {
         // Display the chosen avatar and team selection
         const welcomeMessage = document.createElement('h2');
         welcomeMessage.innerText = `Welcome, ${playerName}! You have selected ${selectedAvatar}.`;
+        welcomeMessage.style.textAlign = 'center';
         app.appendChild(welcomeMessage);
 
         const avatarImage = document.createElement('img');
         avatarImage.src = `images/${selectedAvatar}.png`; // Display selected avatar
         avatarImage.alt = `${playerName}'s Avatar`;
+        avatarImage.style.width = '100px'; // Slightly larger for display
+        avatarImage.style.borderRadius = '50%'; // Keep it circular
+        avatarImage.style.display = 'block'; // Centering the avatar
+        avatarImage.style.margin = '0 auto'; // Center the avatar
         app.appendChild(avatarImage);
 
         // Team selection (for simplicity, assume two teams)
         const teamSelection = document.createElement('div');
         teamSelection.innerHTML = `
-            <h3>Select your team:</h3>
-            <button id="teamOneButton">Team One</button>
-            <button id="teamTwoButton">Team Two</button>
+            <h3 style="text-align: center;">Select your team:</h3>
+            <div style="text-align: center;">
+                <button id="teamOneButton" style="padding: 10px 20px; margin: 5px;">Team One</button>
+                <button id="teamTwoButton" style="padding: 10px 20px; margin: 5px;">Team Two</button>
+            </div>
         `;
 
         const teamOneButton = teamSelection.querySelector('#teamOneButton');
@@ -92,13 +109,11 @@ export function GameSetup(hostGame, joinGame) {
 
         // Event listeners for team selection
         teamOneButton.addEventListener('click', () => {
-            // Logic to join Team One
             app.innerHTML = `${playerName} has joined Team One!`;
             // Proceed with game setup
         });
 
         teamTwoButton.addEventListener('click', () => {
-            // Logic to join Team Two
             app.innerHTML = `${playerName} has joined Team Two!`;
             // Proceed with game setup
         });
