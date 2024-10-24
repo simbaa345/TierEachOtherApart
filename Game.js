@@ -1,146 +1,105 @@
-function setupGame() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-        <h1 style="color: orange; text-align: center;">Welcome to Tier Each Other Apart</h1>
-        <input type="text" id="playerName" placeholder="Enter your name" />
-        <div>
-            <button id="joinGame">Join Game</button>
-            <button id="hostGame">Host Game</button>
-        </div>
-    `;
+let players = [];
+let currentPlayerIndex = 0;
+let timer;
+let tierListData = [];
+const TIER_OPTIONS = ['S', 'A', 'B', 'C', 'D', 'F'];
 
-    document.getElementById('joinGame').onclick = joinGame;
-    document.getElementById('hostGame').onclick = hostGame;
+function startGame(playerList) {
+    players = playerList;
+    currentPlayerIndex = 0;
+    tierListData = getTierListCategories();
+    showGameScreen();
+    startCountdown();
 }
 
-function joinGame() {
+function showGameScreen() {
     const app = document.getElementById('app');
-    const name = document.getElementById('playerName').value;
-
-    if (!name) {
-        alert('Please enter your name.');
-        return;
-    }
-
     app.innerHTML = `
-        <h2 style="color: orange;">Please select your avatar:</h2>
-        <div id="avatars"></div>
-        <div id="teamSelection"></div>
-        <button id="startGame" disabled>Start Game</button>
+        <h2 style="text-align: center;">Game Started!</h2>
+        <div id="countdown" style="text-align: center; font-size: 2em;">2:00</div>
+        <div id="tierList" style="display: flex; justify-content: center; margin-top: 20px;">
+            ${createTierList()}
+        </div>
+        <div id="categoryItems" style="margin-top: 20px;"></div>
+        <button id="submitRanking" style="display: none;">Submit Ranking</button>
     `;
-    loadAvatars();
+    loadCategoryItems();
 
-    // Add logic for selecting avatar and team selection
+    document.getElementById('submitRanking').onclick = submitRanking;
 }
 
-function hostGame() {
-    const app = document.getElementById('app');
-    const name = document.getElementById('playerName').value;
+function startCountdown() {
+    let timeLeft = 120; // 2 minutes
+    const countdownDisplay = document.getElementById('countdown');
 
-    if (!name) {
-        alert('Please enter your name.');
-        return;
-    }
-
-    const lobbyCode = generateLobbyCode();
-    app.innerHTML = `
-        <h2 style="color: orange;">Lobby Code: ${lobbyCode}</h2>
-        <p>${name}, please select your avatar:</p>
-        <div id="avatars"></div>
-        <div id="botSelection">
-            <label for="numBots">Add Bots (0-3): </label>
-            <input type="number" id="numBots" min="0" max="3" value="0">
-            <button id="addBots">Add Bots</button>
-        </div>
-        <div id="teamSelection"></div>
-        <button id="startGame" disabled>Start Game</button>
-    `;
-    loadAvatars();
-
-    document.getElementById('addBots').onclick = () => {
-        const numBots = parseInt(document.getElementById('numBots').value);
-        if (numBots < 0 || numBots > 3) {
-            alert('Please choose between 0 to 3 bots.');
+    timer = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            document.getElementById('submitRanking').style.display = 'block';
             return;
         }
-        addBots(numBots);
-    };
-
-    // Event listener for Start Game button
-    document.getElementById('startGame').onclick = () => {
-        const players = getPlayers();
-        if (players.length < 4) {
-            alert('You need at least 4 players to start the game.');
-            return;
-        }
-        startGame(players); // Pass players to start the game
-    };
+        countdownDisplay.innerText = `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`;
+        timeLeft--;
+    }, 1000);
 }
 
-function addBots(numBots) {
-    const app = document.getElementById('app');
-    const teamSelection = document.getElementById('teamSelection');
-    teamSelection.innerHTML = `<h3>Players:</h3>`;
-    const players = [document.getElementById('playerName').value]; // Add host
-
-    // Add bots
-    for (let i = 1; i <= numBots; i++) {
-        const botName = `Bot ${i}`;
-        players.push(botName);
-        const botDiv = document.createElement('div');
-        botDiv.innerHTML = `<img src="images/bot_avatar${i}.png" class="avatar" alt="${botName}" style="border-radius: 50%; width: 50px; height: 50px;"> ${botName}`;
-        teamSelection.appendChild(botDiv);
-    }
-
-    // Show the player list for teams
-    players.forEach(player => {
-        const playerDiv = document.createElement('div');
-        playerDiv.innerText = player;
-        teamSelection.appendChild(playerDiv);
-    });
-
-    // Enable the Start Game button if there are enough players
-    const startGameButton = document.getElementById('startGame');
-    if (players.length >= 4) {
-        startGameButton.disabled = false;
-    }
+function createTierList() {
+    return TIER_OPTIONS.map(tier => `
+        <div class="tier" data-tier="${tier}" style="border: 1px solid black; padding: 10px; margin: 5px; width: 80px; text-align: center;">
+            <strong>${tier}</strong>
+            <div class="tier-items" id="${tier}-items" style="min-height: 100px;"></div>
+        </div>
+    `).join('');
 }
 
-function getPlayers() {
-    const players = [document.getElementById('playerName').value]; // Include host
-    const numBots = parseInt(document.getElementById('numBots').value);
-    for (let i = 1; i <= numBots; i++) {
-        players.push(`Bot ${i}`);
-    }
-    return players;
-}
+function loadCategoryItems() {
+    const categoryItemsDiv = document.getElementById('categoryItems');
+    categoryItemsDiv.innerHTML = '';
 
-function loadAvatars() {
-    const avatarsDiv = document.getElementById('avatars');
-    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Add more avatar names as needed
-    avatars.forEach(avatar => {
-        const img = document.createElement('img');
-        img.src = `images/${avatar}`;
-        img.className = 'avatar';
-        img.style.borderRadius = '50%';
-        img.style.width = '50px';
-        img.style.height = '50px';
-        img.onclick = () => {
-            img.style.border = '2px solid orange'; // Highlight selected avatar
-            // Disable other avatars
-            avatarsDiv.querySelectorAll('img').forEach(otherImg => {
-                if (otherImg !== img) {
-                    otherImg.style.pointerEvents = 'none';
-                }
-            });
+    tierListData.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.innerText = item;
+        itemDiv.draggable = true;
+        itemDiv.ondragstart = (event) => {
+            event.dataTransfer.setData('text/plain', item);
         };
-        avatarsDiv.appendChild(img);
+        categoryItemsDiv.appendChild(itemDiv);
+    });
+
+    // Add drop functionality to each tier
+    TIER_OPTIONS.forEach(tier => {
+        const tierDiv = document.getElementById(`${tier}-items`);
+        tierDiv.ondragover = (event) => {
+            event.preventDefault(); // Allow dropping
+        };
+        tierDiv.ondrop = (event) => {
+            const item = event.dataTransfer.getData('text/plain');
+            if (item) {
+                const newItem = document.createElement('div');
+                newItem.innerText = item;
+                tierDiv.appendChild(newItem);
+            }
+        };
     });
 }
 
-function generateLobbyCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random lobby code
+function submitRanking() {
+    const rankings = {};
+    TIER_OPTIONS.forEach(tier => {
+        const items = Array.from(document.getElementById(`${tier}-items`).children).map(item => item.innerText);
+        rankings[tier] = items;
+    });
+
+    console.log('Player Rankings:', rankings);
+    // Here you can send rankings to the server or process them as needed
 }
 
-// Call setupGame on page load
-document.addEventListener('DOMContentLoaded', setupGame);
+function getTierListCategories() {
+    // Replace this with your logic to get categories for the players to rank
+    return ['Cereal A', 'Cereal B', 'Cereal C', 'Cereal D', 'Cereal E'];
+}
+
+// Add event listeners for the game start
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the game if needed or wait for the GameSetup.js to call startGame
+});
