@@ -1,24 +1,28 @@
-export function GameSetup(onStart) {
-    const div = document.createElement('div');
-    div.innerHTML = `
-        <h2>Enter Your Name</h2>
-        <input type="text" id="playerName" placeholder="Your Name" />
-        <button id="createLobby">Create Lobby</button>
-        <button id="joinLobby">Join Lobby</button>
-    `;
-    
-    const nameInput = div.querySelector('#playerName');
-    div.querySelector('#createLobby').onclick = () => {
-        const name = nameInput.value;
-        // Logic to create a lobby
-        onStart(name, true); // Call onStart with name and lobby creation
-    };
-    div.querySelector('#joinLobby').onclick = () => {
-        const name = nameInput.value;
-        const lobbyCode = prompt('Enter Lobby Code:');
-        // Logic to join a lobby
-        onStart(name, false, lobbyCode); // Call onStart with name and lobby joining
-    };
+// GameSetup.js
 
-    return div;
+// This function creates the game setup UI and handles starting the game
+export function GameSetup(startGame) {
+    const container = document.createElement('div');
+
+    container.innerHTML = `
+        <h2>Game Setup</h2>
+        <label for="playerName">Enter your name:</label>
+        <input type="text" id="playerName" placeholder="Your name" />
+        <button id="startButton">Start Game</button>
+    `;
+
+    const startButton = container.querySelector('#startButton');
+    const playerNameInput = container.querySelector('#playerName');
+
+    // Event listener for starting the game
+    startButton.addEventListener('click', () => {
+        const playerName = playerNameInput.value.trim();
+        if (playerName) {
+            startGame(playerName); // Call the startGame function with the player's name
+        } else {
+            alert('Please enter a name.');
+        }
+    });
+
+    return container; // Return the created container
 }
