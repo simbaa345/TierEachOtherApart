@@ -28,35 +28,53 @@ function hostGame() {
         <h2>Lobby Code: ${lobbyCode}</h2>
         <p>${name}, please select your avatar:</p>
         <div id="avatars"></div>
+        <div id="botSelection">
+            <label for="numBots">Add Bots (0-3): </label>
+            <input type="number" id="numBots" min="0" max="3" value="0">
+            <button id="addBots">Add Bots</button>
+        </div>
         <div id="teamSelection"></div>
         <button id="startGame" disabled>Start Game</button>
     `;
     loadAvatars();
 
-    // More logic for hosting the game...
+    document.getElementById('addBots').onclick = () => {
+        const numBots = parseInt(document.getElementById('numBots').value);
+        if (numBots < 0 || numBots > 3) {
+            alert('Please choose between 0 to 3 bots.');
+            return;
+        }
+        addBots(numBots);
+    };
 }
 
-function joinGame() {
-    // Logic for joining the game
-}
+function addBots(numBots) {
+    const app = document.getElementById('app');
+    const teamSelection = document.getElementById('teamSelection');
+    teamSelection.innerHTML = `<h3>Players:</h3>`;
+    const players = [document.getElementById('playerName').value]; // Add host
 
-function generateLobbyCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase(); // Simple random code
-}
+    // Add bots
+    for (let i = 1; i <= numBots; i++) {
+        const botName = `Bot ${i}`;
+        players.push(botName);
+        const botAvatar = `bot_avatar${i}.png`; // Adjust the bot avatar names
+        const botDiv = document.createElement('div');
+        botDiv.innerHTML = `<img src="images/${botAvatar}" class="avatar" alt="${botName}"> ${botName}`;
+        teamSelection.appendChild(botDiv);
+    }
 
-function loadAvatars() {
-    const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png']; // Example avatar filenames
-    const avatarContainer = document.getElementById('avatars');
-
-    avatars.forEach(avatar => {
-        const img = document.createElement('img');
-        img.src = `images/${avatar}`;
-        img.className = 'avatar';
-        img.onclick = () => selectAvatar(avatar);
-        avatarContainer.appendChild(img);
+    // Show the player list for teams
+    players.forEach(player => {
+        const playerDiv = document.createElement('div');
+        playerDiv.innerText = player;
+        teamSelection.appendChild(playerDiv);
     });
+
+    // Logic for enabling the Start Game button
+    const startGameButton = document.getElementById('startGame');
+    if (players.length >= 4) {
+        startGameButton.disabled = false;
+    }
 }
 
-function selectAvatar(avatar) {
-    // Handle avatar selection logic
-}
