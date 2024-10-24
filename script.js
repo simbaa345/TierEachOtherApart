@@ -1,5 +1,3 @@
-console.log("script.js is loaded");
-
 import { GameSetup } from './GameSetup.js';
 import { GameLobby } from './GameLobby.js';
 import { categories } from './categories.js'; // Import your categories
@@ -8,8 +6,10 @@ const socket = io(); // Initialize Socket.IO
 const existingLobbyCodes = new Set(); // To keep track of lobby codes
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded and parsed");
+    
     const app = document.getElementById('app');
-
+    
     // Function to get a random category
     function getRandomCategory() {
         const randomIndex = Math.floor(Math.random() * categories.length);
@@ -18,18 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start the game and handle lobby creation/joining
     const startGame = (playerName, isCreating, lobbyCode) => {
+        console.log('Starting game with:', playerName, isCreating, lobbyCode);
         const selectedCategory = getRandomCategory(); // Get a random category
 
-        if (isCreating) {
-            const newLobbyCode = generateLobbyCode(); // Generate a unique lobby code
-            app.innerHTML = ''; // Clear the app
-            app.appendChild(GameLobby(newLobbyCode, [{ name: playerName }], selectedCategory)); // Pass the selected category
-            socket.emit('joinLobby', newLobbyCode); // Join the newly created lobby
-        } else {
-            app.innerHTML = ''; // Clear the app
-            app.appendChild(GameLobby(lobbyCode, [{ name: playerName }], selectedCategory)); // Pass the selected category
-            socket.emit('joinLobby', lobbyCode); // Join the existing lobby
-        }
+        app.innerHTML = ''; // Clear existing content
+        app.appendChild(GameLobby(lobbyCode, [{ name: playerName }], selectedCategory)); // Render the GameLobby
+        socket.emit('joinLobby', lobbyCode); // Join the specified lobby
     };
 
     // Function to generate a random lobby code
@@ -57,10 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for ranking updates from other players
     socket.on('receiveRanking', (data) => {
         console.log('Received ranking:', data);
-        // Update the UI with received rankings
-        // You can handle score calculation here
+        // Handle received rankings (update UI, calculate scores, etc.)
     });
 
     // Initial load: Show game setup
-    app.appendChild(GameSetup(startGame));
+    app.innerHTML = '<h2>Welcome to Tier Each Other Apart!</h2>'; // Add a welcome message
+    app.appendChild(GameSetup(startGame)); // Call the GameSetup function to render the game setup
 });
